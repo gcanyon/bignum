@@ -150,7 +150,7 @@ end bigDivSigned
 function bigDiv X,D
    -- returns (X div D),(X mod D). X,D must be non-negative
    put length(D) into lenD
-   if lenD < 15 then return bigishDiv(X,D)
+   --if lenD < 15 then return bigishDiv(X,D) -- bigishDiv is broken at present
    if bigCompare(X,"<",D) then return 0,X
    put D into dArray[1]
    put 14 - lenD into lenDbit
@@ -190,7 +190,7 @@ function bigDiv X,D
    if Q is empty then return 0,xBit else return stripLeadingZeros(Q),xBit 
 end bigDiv
 
-function bigishDiv X,D
+function bigishDiv X,D -- broken. Inserts 0s that should not be.
    -- returns (X div D),(X mod D). X,D must be non-negative
    -- works only with values of D within LC's numeric limits
    put length(D) into lenD
