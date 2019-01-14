@@ -147,47 +147,47 @@ function bigDivSigned X,D
 end bigDivSigned
 
 
-function bigDiv X,D
-   -- returns (X div D),(X mod D). X,D must be non-negative
+function bigDiv N,D
+   -- returns (N div D),(N mod D). N,D must be non-negative
    put length(D) into lenD
-   --if lenD < 15 then return bigishDiv(X,D)
-   if bigCompare(X,"<",D) then return 0,X
+   if lenD < 15 then return bigishDiv(X,D)
+   if bigCompare(N,"<",D) then return 0,N
    put D into dArray[1]
-   put 14 - lenD into lenDbit
+   put min(-1,14 - lenD) into lenDbit
    put char 1 to lenDbit of D into dBitArray[1]
    repeat with i = 2 to 9
       put bigAdd(dArray[i - 1],D) into dArray[i]
       put char 1 to lenDbit of dArray[i] into dBitArray[i]
    end repeat
-   put char 1 to lenD - 1 of X into xBit
-   repeat with m = lenD to length(X)
-      put char m of X after xBit
-      if length(xBit) < lenD then
+   put char 1 to lenD - 1 of N into nBit
+   repeat with m = lenD to length(N)
+      put char m of N after nBit
+      if length(nBit) < lenD then
          put 0 after Q
          next repeat
       end if
-      put char 1 to lenDbit of xBit into xCompareBit
-      if xCompareBit >= dBitArray[5] then
-         if xCompareBit >= dBitArray[8] then
-            if xCompareBit >= dBitArray[9] then put 9 into C 
+      put char 1 to lenDbit of nBit into nCompareBit
+      if nCompareBit >= dBitArray[5] then
+         if nCompareBit >= dBitArray[8] then
+            if nCompareBit >= dBitArray[9] then put 9 into C 
             else put 8 into C
-         else if xCompareBit >= dBitArray[7] then put 7 into C
-         else if xCompareBit >= dBitArray[6] then put 6 into C 
+         else if nCompareBit >= dBitArray[7] then put 7 into C
+         else if nCompareBit >= dBitArray[6] then put 6 into C 
          else put 5 into C
-      else if xCompareBit >= dBitArray[3] then
-         if xCompareBit >= dBitArray[4] then put 4 into C 
+      else if nCompareBit >= dBitArray[3] then
+         if nCompareBit >= dBitArray[4] then put 4 into C 
          else put 3 into C
-      else if xCompareBit >= dBitArray[2] then put 2 into C
-      else if xCompareBit >= dBitArray[1] then put 1 into C 
+      else if nCompareBit >= dBitArray[2] then put 2 into C
+      else if nCompareBit >= dBitArray[1] then put 1 into C 
       else 
          put 0 after Q
          next repeat
       end if
-      if xCompareBit = dBitArray[C] and bigCompare(xBit,"<",dArray[C]) then subtract 1 from C
-      put bigSubtract(xBit,dArray[C]) into xBit
+      if nCompareBit = dBitArray[C] and bigCompare(nBit,"<",dArray[C]) then subtract 1 from C
+      put bigSubtract(nBit,dArray[C]) into nBit
       put C after Q 
    end repeat
-   if Q is empty then return 0,xBit else return stripLeadingZeros(Q),xBit 
+   if Q is empty then return 0,nBit else return stripLeadingZeros(Q),nBit 
 end bigDiv
 
 function bigishDiv N,D
