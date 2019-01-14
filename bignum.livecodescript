@@ -150,7 +150,7 @@ end bigDivSigned
 function bigDiv X,D
    -- returns (X div D),(X mod D). X,D must be non-negative
    put length(D) into lenD
-   --if lenD < 15 then return bigishDiv(X,D) -- bigishDiv is broken at present
+   --if lenD < 15 then return bigishDiv(X,D)
    if bigCompare(X,"<",D) then return 0,X
    put D into dArray[1]
    put 14 - lenD into lenDbit
@@ -190,7 +190,28 @@ function bigDiv X,D
    if Q is empty then return 0,xBit else return stripLeadingZeros(Q),xBit 
 end bigDiv
 
-function bigishDiv X,D -- broken. Inserts 0s that should not be.
+function bigishDiv N,D
+   -- returns (N div D),(N mod D). N,D must be non-negative
+   -- works with any length N, values of D up to 14 digits
+   put length(D) into lenD
+   put length(N) into lenN
+   put (char 1 to 15 of N) div D into Q
+   put max(0,(lenN - 15)) + length(Q) into lenQ
+   put (char 1 to 15 of N) mod D into char 1 to 15 of N
+   put length(N) into lenNn
+   repeat until lenNn <= lenD and N < D
+      put max(15,lenNn) - lenN into pad0
+      put lenNn into lenN
+      put char pad0 to -1 of ("000000000000000" & ((char 1 to 15 of N) div D)) after Q
+      put (char 1 to 15 of N) mod D into char 1 to 15 of N
+      put length(N) into lenNn
+   end repeat
+   put char 1 to lenQ - length(Q) of "000000000000000" after Q
+   if Q is empty then return 0,N else return Q,N
+end bigishDiv
+
+
+function bigishDiv X,D
    -- returns (X div D),(X mod D). X,D must be non-negative
    -- works only with values of D within LC's numeric limits
    put length(D) into lenD
@@ -199,7 +220,7 @@ function bigishDiv X,D -- broken. Inserts 0s that should not be.
       put (char 1 to 14 of X) div D into QN
       put (char 1 to 14 of X) mod D into char 1 to 14 of X
       put length(X) into lenXN
-      put QN & (char 1 to lenX - lenXN - 1 of "000000000000000") after Q
+      put QN & (char 1 to lenX - lenXN - length(QN) of "000000000000000") after Q
       put lenXN into lenX
    end repeat
    if Q is empty then return 0,X else return Q,X
@@ -265,3 +286,13 @@ function stripLeadingZeros X
       if char i of X is not "0" then return char i to -1 of X
    end repeat
 end stripLeadingZeros
+
+function bigCheck N,D
+   put bigDiv(N,D) into BD
+   put bigishDiv(N,D) into BID
+   --if BD is not BID then breakpoint
+   put bigTimes(item 1 of BID,D) into BP
+   put bigAdd(BP,item 2 of BID) into BS
+   if BS is not N then breakpoint
+   return "'saul good, man"
+end bigCheck
